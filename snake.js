@@ -35,7 +35,6 @@ let yVelocity = 0;
 let appleXPos = Math.floor(Math.random() * 19) * boxSize;
 let appleYPos = Math.floor(Math.random() * 19) * boxSize;
 const snakeBody = [];
-let tail = 0;
 let score = 0;
 let gameOver = false;
 
@@ -124,7 +123,6 @@ function checkWallCollision() {
 }
 
 function addSnakePart(){
-  tail++;
   snakeBody.push(new Snakepart(headXPos, headYPos));
 }
 
