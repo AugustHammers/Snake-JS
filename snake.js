@@ -1,16 +1,43 @@
+class Snakepart {
+  constructor (x, y) {
+    this.xPos = x;
+    this.yPos = y;
+  }
+
+  get getXPos() {
+    return this.xPos;
+  }
+
+  get getYPos() {
+    return this.yPos;
+  }
+
+  set XPos(x) {
+    this.xPos = x;
+  }
+  
+  set YPos(y) {
+    this.yPos = y;
+  }
+}
+
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 const boxSize = 25; //500px / 20 boxes
 const darkerBlue = "#00989d";
 const lighterBlue = "#75b3aa";
-let gameSpeed = 15; //60 updates/second
+const snakeBodyColor = "#ed6b87";
+let gameSpeed = 15; //15 updates/second
 let headXPos = 250; 
 let headYPos = 250;
 let xVelocity = 0;
 let yVelocity = 0;
 let appleXPos = Math.floor(Math.random() * 19) * boxSize;
 let appleYPos = Math.floor(Math.random() * 19) * boxSize;
+const snakeBody = [];
+let tail = 0;
 let score = 0;
+let gameOver = false;
 
 function drawBoard() {
   ctx.fillStyle = darkerBlue;
@@ -36,6 +63,23 @@ function drawBoard() {
 }
 
 function updateSnakePos(){
+
+  for(let i = snakeBody.length-1; i >= 0; i--) {
+    let newXPos;
+    let newYPos;
+    if (i === 0) {
+      newXPos = headXPos;
+      newYPos = headYPos;
+    } else {
+      newXPos = snakeBody[i-1].getXPos;
+      newYPos = snakeBody[i-1].getYPos;
+    }
+
+    console.log(snakeBody[i]);
+    snakeBody[i].XPos = newXPos;
+    snakeBody[i].YPos = newYPos;
+  }
+
   headXPos += xVelocity;
   headYPos += yVelocity;
 }
@@ -43,9 +87,19 @@ function updateSnakePos(){
 function updateApplePos(){
   appleXPos = Math.floor(Math.random() * 19) * boxSize;
   appleYPos = Math.floor(Math.random() * 19) * boxSize; 
+
+  if (snakeBody.some(part => {
+    if (appleXPos == part.xPos && appleYPos == part.yPos) return true;
+  })) {
+    updateApplePos();
+  }
 }
 
 function drawSnake(){
+  ctx.fillStyle = snakeBodyColor;
+  snakeBody.forEach(part => {
+    ctx.fillRect(part.xPos+4, part.yPos+4, boxSize-8, boxSize-8);
+  });
   ctx.fillStyle = "yellow";
   ctx.fillRect(headXPos+4, headYPos+4, boxSize-8, boxSize-8);
 }
@@ -55,14 +109,37 @@ function drawApple(){
   ctx.fillRect(appleXPos+4, appleYPos+4, boxSize-8, boxSize-8);
 }
 
+function checkAppleCollision(){
+  if (headXPos === appleXPos && headYPos === appleYPos) {
+    score++;
+    addSnakePart();
+    updateApplePos();
+  }
+}
+
+function checkWallCollision() {
+  if (headXPos < 0 || headXPos > 500 || headYPos < 0 || headYPos > 500) {
+    gameOver = true;
+  }
+}
+
+function addSnakePart(){
+  tail++;
+  snakeBody.push(new Snakepart(headXPos, headYPos));
+}
+
+function checkSnakeCollision() {
+
+}
+
 function gameLoop() {
   drawBoard();
   drawSnake();
   drawApple();
   document.addEventListener("keydown", (event) => {
-    event.preventDefault(); // To prevent arrow key scrolling
     switch(event.key) {
       case "ArrowUp":
+        event.preventDefault(); // To prevent arrow key scrolling
         if (yVelocity == 25) {
           break;
         }
@@ -71,6 +148,7 @@ function gameLoop() {
         yVelocity = -25;
         break;
       case "ArrowLeft":
+        event.preventDefault();
         if (xVelocity == 25) {
           break;
         }
@@ -79,6 +157,7 @@ function gameLoop() {
         yVelocity = 0;
         break;
       case "ArrowDown":
+        event.preventDefault();
         if (yVelocity == -25) {
           break;
         }
@@ -87,6 +166,7 @@ function gameLoop() {
         yVelocity = 25;
         break;
       case "ArrowRight":
+        event.preventDefault();
         if (xVelocity == -25) {
           break;
         }
@@ -94,15 +174,16 @@ function gameLoop() {
         xVelocity = 25;
         yVelocity = 0;
         break;
+      case "Escape":
+        gameSpeed = 1;
+        break;
       default:
     }
   });
-
   updateSnakePos();
-  if (headXPos === appleXPos && headYPos === appleYPos) {
-    score++;
-    updateApplePos();
-  }
+  checkAppleCollision();
+  checkWallCollision();
+  //checkSnakeCollision();
   setTimeout(gameLoop, 1000/gameSpeed);
 }
 
