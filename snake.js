@@ -21,11 +21,12 @@ class Snakepart {
   }
 }
 
+const scoreElem = document.getElementById("score");
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 const boxSize = 25; //500px / 20 boxes
-const darkerBlue = "#00989d";
-const lighterBlue = "#75b3aa";
+const darkerBlue = "#0e3d8c"; //"#00989d";
+const lighterBlue = "#1046a1"; //"#75b3aa"; 
 const snakeBodyColor = "#ed6b87";
 let gameSpeed = 15; //15 updates/second
 let headXPos = 250; 
@@ -81,6 +82,7 @@ function updateSnakePos(){
 
   headXPos += xVelocity;
   headYPos += yVelocity;
+  checkSnakeCollision();
 }
 
 function updateApplePos(){
@@ -127,10 +129,15 @@ function addSnakePart(){
 }
 
 function checkSnakeCollision() {
-
+  if (snakeBody.some(part => {
+    if (headXPos === part.getXPos && headYPos === part.getYPos) return true;
+  })) {
+    gameOver = true;
+  }
 }
 
 function gameLoop() {
+  scoreElem.innerText = score;
   drawBoard();
   drawSnake();
   drawApple();
@@ -181,7 +188,7 @@ function gameLoop() {
   updateSnakePos();
   checkAppleCollision();
   checkWallCollision();
-  //checkSnakeCollision();
+  console.log(gameOver);
   setTimeout(gameLoop, 1000/gameSpeed);
 }
 
