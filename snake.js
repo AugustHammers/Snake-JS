@@ -136,60 +136,73 @@ function checkSnakeCollision() {
   }
 }
 
+function checkGameOver(timer) {
+  if (!gameOver) {
+    return;
+  }
+
+  xVelocity = 0;
+  yVelocity = 0;
+  document.removeEventListener("keydown", handleKeydown);
+  clearTimeout(timer);
+}
+
+function handleKeydown(event) {
+  switch(event.key) {
+    case "ArrowUp":
+      event.preventDefault(); // To prevent arrow key scrolling
+      if (yVelocity == 25) {
+        break;
+      }
+
+      xVelocity = 0;
+      yVelocity = -25;
+      break;
+    case "ArrowLeft":
+      event.preventDefault();
+      if (xVelocity == 25) {
+        break;
+      }
+
+      xVelocity = -25;
+      yVelocity = 0;
+      break;
+    case "ArrowDown":
+      event.preventDefault();
+      if (yVelocity == -25) {
+        break;
+      }
+
+      xVelocity = 0;
+      yVelocity = 25;
+      break;
+    case "ArrowRight":
+      event.preventDefault();
+      if (xVelocity == -25) {
+        break;
+      }
+
+      xVelocity = 25;
+      yVelocity = 0;
+      break;
+    case "Escape":
+      gameSpeed = 1;
+      break;
+    default:
+  }
+}
+
 function gameLoop() {
+  let timer = setTimeout(gameLoop, 1000/gameSpeed);
   scoreElem.innerText = score;
   drawBoard();
   drawSnake();
   drawApple();
-  document.addEventListener("keydown", (event) => {
-    switch(event.key) {
-      case "ArrowUp":
-        event.preventDefault(); // To prevent arrow key scrolling
-        if (yVelocity == 25) {
-          break;
-        }
-
-        xVelocity = 0;
-        yVelocity = -25;
-        break;
-      case "ArrowLeft":
-        event.preventDefault();
-        if (xVelocity == 25) {
-          break;
-        }
-
-        xVelocity = -25;
-        yVelocity = 0;
-        break;
-      case "ArrowDown":
-        event.preventDefault();
-        if (yVelocity == -25) {
-          break;
-        }
-
-        xVelocity = 0;
-        yVelocity = 25;
-        break;
-      case "ArrowRight":
-        event.preventDefault();
-        if (xVelocity == -25) {
-          break;
-        }
-
-        xVelocity = 25;
-        yVelocity = 0;
-        break;
-      case "Escape":
-        gameSpeed = 1;
-        break;
-      default:
-    }
-  });
+  document.addEventListener("keydown", handleKeydown);
   updateSnakePos();
   checkAppleCollision();
   checkWallCollision();
-  console.log(gameOver);
-  setTimeout(gameLoop, 1000/gameSpeed);
+  checkGameOver(timer);
 }
 
 gameLoop();
