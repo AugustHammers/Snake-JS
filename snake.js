@@ -119,7 +119,7 @@ function checkAppleCollision(){
 }
 
 function checkWallCollision() {
-  if (headXPos < 0 || headXPos > 500 || headYPos < 0 || headYPos > 500) {
+  if (headXPos < 0 || headXPos >= 500 || headYPos < 0 || headYPos >= 500) {
     gameOver = true;
   }
 }
@@ -201,6 +201,7 @@ function gameLoop() {
   document.addEventListener("keydown", handleKeydown);
   updateSnakePos();
   checkAppleCollision();
+  console.log(headXPos, headYPos);
   checkWallCollision();
   checkGameOver(timer);
 }
