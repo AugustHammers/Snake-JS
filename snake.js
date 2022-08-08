@@ -35,9 +35,12 @@ let xVelocity = 0;
 let yVelocity = 0;
 let appleXPos = Math.floor(Math.random() * 19) * boxSize;
 let appleYPos = Math.floor(Math.random() * 19) * boxSize;
-const snakeBody = [];
+let snakeBody = [];
 let score = 0;
 let gameOver = false;
+const endGameElem = document.getElementById("endGameMessage");
+const endScoreElem = document.getElementById("endScore");
+const restartButton = document.getElementById("restartBtn");
 
 function drawBoard() {
   ctx.fillStyle = darkerBlue;
@@ -145,6 +148,9 @@ function checkGameOver(timer) {
   yVelocity = 0;
   document.removeEventListener("keydown", handleKeydown);
   clearTimeout(timer);
+  endGameElem.classList.toggle("show");
+  endScoreElem.innerText = score;
+  restartButton.addEventListener("click", startGame);
 }
 
 function handleKeydown(event) {
@@ -201,9 +207,22 @@ function gameLoop() {
   document.addEventListener("keydown", handleKeydown);
   updateSnakePos();
   checkAppleCollision();
-  console.log(headXPos, headYPos);
   checkWallCollision();
   checkGameOver(timer);
 }
 
-gameLoop();
+function startGame() {
+  gameOver = false;
+  snakeBody = [];
+  headXPos = 250;
+  headYPos = 250;
+  appleXPos = Math.floor(Math.random() * 19) * boxSize;
+  appleYPos = Math.floor(Math.random() * 19) * boxSize; 
+
+  endGameElem.classList.remove("show");
+  score = 0;
+
+  gameLoop();
+}
+
+startGame();
